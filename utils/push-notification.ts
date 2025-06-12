@@ -1,11 +1,32 @@
 import * as admin from "firebase-admin";
+import fs from "node:fs";
 import { Context } from ".keystone/types";
-import cert from "../serviceAccount.json";
+
+let serviceAccount: admin.ServiceAccount | string;
+
+if (process.env.NODE_ENV === "production") {
+  const serviceAccountPath = process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH;
+  if (!serviceAccountPath) {
+    throw new Error(
+      "FIREBASE_SERVICE_ACCOUNT_KEY_PATH environment variable is not set in production"
+    );
+  }
+  // In production, read the service account key file from the specified path
+  if (!fs.existsSync(serviceAccountPath)) {
+    throw new Error(
+      `Service account key file not found at ${serviceAccountPath}`
+    );
+  }
+  serviceAccount = serviceAccountPath;
+} else {
+  // In development, use the service account key file
+  serviceAccount = require("../serviceAccount.json") as admin.ServiceAccount;
+}
 
 // Initialize Firebase Admin SDK
 if (!admin.apps.length) {
   admin.initializeApp({
-    credential: admin.credential.cert(cert as admin.ServiceAccount),
+    credential: admin.credential.cert(serviceAccount),
     // You can also use a service account key file:
     // credential: admin.credential.cert(require('./path/to/serviceAccountKey.json')),
   });

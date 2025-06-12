@@ -45,5 +45,13 @@ export default withAuth(
       isAccessAllowed: allowAuthorized,
       publicPages: ["/terms", "/privacy"],
     },
+    server: {
+      extendExpressApp(app, context) {
+        // add health check endpoint
+        app.get("/healthz", (req, res) => {
+          res.status(200).json({ status: "ok" });
+        });
+      },
+    },
   })
 );
