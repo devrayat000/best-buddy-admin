@@ -1,0 +1,9 @@
+node_modules
+.keystone/admin
+.keystone
+keystone.db
+*.log
+
+.env
+.env.*local
+serviceAccount.json
