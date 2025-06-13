@@ -450,8 +450,7 @@ export const lists: Lists<AuthSession> = {
             }),
           },
           resolve(item, { length }) {
-            const nodes = JSON.parse(item.content) as Node[];
-            const plainText = nodes.map((n) => Node.string(n)).join("\n");
+            const plainText = serialize(item.content);
             return plainText.substring(0, length ?? undefined);
           },
         }),
